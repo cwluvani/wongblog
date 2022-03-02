@@ -1,8 +1,0 @@
-{
-  "name": "wongblog",
-  "version": "1.0.0",
-  "main": "index.js",
-  "repository": "git@github.com:cwluvani/wongblog.git",
-  "author": "Chris Wong <wh18710455626@126.com>",
-  "license": "MIT"
-}
