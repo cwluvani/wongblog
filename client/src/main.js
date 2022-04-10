@@ -6,9 +6,11 @@ import Antd from 'ant-design-vue'
 import 'ant-design-vue/dist/antd'
 
 
-createApp(App)
-    .mount('#app')
-    .use(router)
+const app = createApp(App)
+app.mount('#app')
+app.use(router)
     .use(store)
     .use(Antd)
+
+
     

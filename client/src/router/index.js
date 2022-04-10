@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
 import Home from '../components/Home.vue';
-import firebase from 'firebase/app';
+// import firebase from 'firebase/app';
 import 'firebase/auth';
 const routes = [
     {
@@ -20,7 +20,7 @@ const routes = [
             title: 'blogs',
             requiresAuth: false
         }
-    }
+    },
 ];
 
 const router = createRouter({
