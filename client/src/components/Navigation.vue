@@ -30,19 +30,19 @@
 import { ref } from 'vue';
 
 export default {
-    name: 'Navigation',
+    name: 'navigation',
     components: {
         
     },
 
     setup() {
         const mobile = ref(null);
-        const mobileNav = ref(null);
+        const mobileNav = ref(false);
         const windowWidth = ref(null);
 
         const checkScreen = () => {
           windowWidth.value = window.innerWidth;
-          if (windowWidth.value <= 750) {
+          if (windowWidth.value <= 750) { // mobile screen
             mobile.value = true;
             return;
           }
@@ -55,14 +55,14 @@ export default {
           mobileNav.value = !mobileNav.value
         };
 
+
         // beforecreated & created life cycle methods
-        window.addEventListener("resize", checkScreen, false);
         checkScreen();
+        window.addEventListener("resize", checkScreen, false);
         
         return {
           mobile,
           mobileNav,
-          windowWidth,
           toggleMobileNav,
         }
     },
@@ -161,14 +161,14 @@ header {
       transition: all 600ms ease;
     }
 
-    .mobile-nav-enter {
+    .mobile-nav-enter-from {
       transform: translateX(-250px);
     }
 
     .mobile-nav-enter-to {
-      transform: translateX(0px);
+      transform: translateX(0);
     }
-    
+
     .mobile-nav-leave-to {
       transform: translateX(-250px);
     }
