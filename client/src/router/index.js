@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
-import Home from '../components/Home.vue';
+import Home from '../pages/Home.vue';
 // import firebase from 'firebase/app';
 import 'firebase/auth';
 const routes = [
@@ -8,19 +8,20 @@ const routes = [
         path: '/',
         name: 'Home',
         component: Home,
-        meta: {
-            title: 'Home',
-            requiresAuth: false
-        }
     },
     {
         path: '/blogs',
-        name: 'Blogs',
-        meta: {
-            title: 'blogs',
-            requiresAuth: false
-        }
+        name: 'Blogs'
     },
+    {
+        path: '/createPost',
+        name: 'CreatePost',
+
+    },
+    {
+        path: '/login',
+        name: 'Login'
+    }
 ];
 
 const router = createRouter({

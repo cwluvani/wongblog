@@ -1,5 +1,5 @@
 <template>
-  <footer>
+  <footer ref="footerRoot">
     <div class="container">
       <div class="left">
         <div class="col-1">
@@ -45,7 +45,7 @@
 
 <script>
 export default {
-    name: 'footer',
+    name: 'Footer',
     components: {
 
     },

@@ -7,10 +7,10 @@ import 'ant-design-vue/dist/antd'
 
 
 const app = createApp(App)
-app.mount('#app')
 app.use(router)
     .use(store)
     .use(Antd)
+app.mount('#app')
 
 
     
