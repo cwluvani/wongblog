@@ -31,12 +31,12 @@ export default {
             {
                 title: "this is a Filler Title!",
                 blogHTML: "This is a filler blog title!",
-                blogCoverPhoto: "beautiful stories"
+                blogCoverPhoto: "beautiful-stories"
             },
             {
                 title: "this is a Filler Title!",
                 blogHTML: "This is a filler blog title!",
-                blogCoverPhoto: "beautiful stories"
+                blogCoverPhoto: "designed-for-everyone"
             }
         ]);
 
