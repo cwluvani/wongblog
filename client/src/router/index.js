@@ -21,6 +21,10 @@ const routes = [
     {
         path: '/login',
         name: 'Login'
+    },
+    {
+        path: '/viewblog',
+        name: 'ViewBlog'
     }
 ];
 
