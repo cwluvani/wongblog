@@ -11,7 +11,7 @@
           <div class="container">
               <h3>View More Recent Blogs</h3>
               <div class="blog-cards">
-                <BlogCard 
+                <BlogCard
                     v-for="(cardContent, index) in sampleBlogCard"
                     :key="index"
                     :cardContent = "cardContent"
@@ -32,7 +32,8 @@
 </template>
 
 <script>
-import { reactive, ref } from 'vue';
+import { reactive, computed } from 'vue';
+import { useStore } from 'vuex';
 import BlogPost from '../components/BlogPost.vue';
 import BlogCard from '../components/BlogCard.vue';
 
@@ -44,6 +45,7 @@ export default {
     },
     
     setup() {
+        const store = useStore();
         const welcomeScreen = reactive({
             title: "Welcome!",
             blogPost:
@@ -51,51 +53,18 @@ export default {
             welcomeScreen: true,
             photo: "coding",
         });
-        const sampleBlogPost = ref([
-            {
-                title: "this is a Filler Title!",
-                blogHTML: "This is a filler blog title!",
-                blogCoverPhoto: "beautiful-stories"
-            },
-            {
-                title: "this is a Filler Title!",
-                blogHTML: "This is a filler blog title!",
-                blogCoverPhoto: "designed-for-everyone"
-            }
-        ]);
-        const sampleBlogCard = ref([
-            {
-                blogTitle: "Blog Card #1",
-                blogCoverPhoto: "stock-1",
-                blogDate: "Hey 1, 2022"
-            },
-            {
-                blogTitle: "Blog Card #2",
-                blogCoverPhoto: "stock-2",
-                blogDate: "Hey 1, 2022"
-            },
-            {
-                blogTitle: "Blog Card #3",
-                blogCoverPhoto: "stock-3",
-                blogDate: "Hey 1, 2022"
-            },
-            {
-                blogTitle: "Blog Card #4",
-                blogCoverPhoto: "stock-4",
-                blogDate: "Hey 1, 2022"
-            }
-        ]);
+        const sampleBlogPost = computed(() => store.state.sampleBlogPost);
+        const sampleBlogCard = computed(() => store.state.sampleBlogCard);
+      
         return {
             welcomeScreen,
             sampleBlogPost,
-            sampleBlogCard
+            sampleBlogCard,
         }
     },
 
     data() {
-        return {
-            
-        }
+        return {}
     },
 }
 </script>
