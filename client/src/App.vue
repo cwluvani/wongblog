@@ -1,9 +1,9 @@
 <template>
   <div class="app-wrapper">
     <div class="app">
-      <Navigation />
+      <Navigation v-if="!navigation" />
       <router-view></router-view>
-      <Footer />
+      <Footer v-if="!navigation" />
     </div>
   </div>
 
@@ -12,12 +12,45 @@
 <script>
 import Navigation from './components/Navigation.vue';
 import Footer from './components/Footer.vue';
+import { useRoute } from 'vue-router';
+import { ref, watch } from 'vue';
 
 export default {
   name: 'app',
   components: {
     Navigation,
     Footer
+  },
+  setup() {
+    const route = useRoute();
+
+    /** Is navigation show on top of the page ? */
+    const navigation = ref(null);
+
+    const checkRoute = () => {
+      if (route.name === 'Login'
+        || route.name === 'Register'
+        || route.name === 'ForgotPassword'
+        ) {
+          navigation.value = true;
+          return;
+        }
+      navigation.value = false;
+    }
+    /**watch the changes of current route dynamically */
+    watch(
+      route,
+      () => {
+        checkRoute();
+      },
+    );
+
+    checkRoute();
+
+    return {
+      checkRoute,
+      navigation
+    }
   }
 }
 </script>

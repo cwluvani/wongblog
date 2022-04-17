@@ -5,7 +5,9 @@ import Home from '../pages/Home.vue';
 import 'firebase/auth';
 
 const Blogs = () => import('../pages/Blogs.vue');
-
+const Login = () => import('../pages/Login.vue');
+const Register = () => import('../pages/Register.vue');
+const ForgotPassword = () => import('../pages/ForgotPassword.vue');
 const routes = [
     {
         path: '/',
@@ -13,7 +15,8 @@ const routes = [
         component: Home,
         meta: {
             title: 'Home'
-        }
+        },
+        alias: '/home'
     },
     {
         path: '/blogs',
@@ -30,7 +33,18 @@ const routes = [
     },
     {
         path: '/login',
-        name: 'Login'
+        name: 'Login',
+        component: Login
+    },
+    {
+        path: '/register',
+        name: 'Register',
+        component: Register
+    },
+    {
+        path: '/forgot-password',
+        name: 'ForgotPassword',
+        component: ForgotPassword
     },
     {
         path: '/viewblog',
@@ -45,7 +59,7 @@ const router = createRouter({
 
 // global navigation guard
 router.beforeEach((to, from, next) => {
-    document.title = `${to.meta.title} | WongBlog`;
+    document.title = `${to.meta.title || 'welcome'} | WongBlog`;
     next();
 });
 
