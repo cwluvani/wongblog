@@ -1,6 +1,6 @@
 <template>
   <div class="form-wrap">
-    <form class="login">
+    <form class="register">
       <p class="login-register">
         Already have an account?
         <router-link class="router-link" :to="{ name: 'Login' }">

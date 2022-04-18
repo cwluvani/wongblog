@@ -5,7 +5,8 @@ import Home from '../pages/Home.vue';
 import 'firebase/auth';
 
 const Blogs = () => import('../pages/Blogs.vue');
-const Login = () => import('../pages/Login.vue');
+// const Login = () => import('../pages/Login.vue');
+import Login from '../pages/Login.vue';
 const Register = () => import('../pages/Register.vue');
 const ForgotPassword = () => import('../pages/ForgotPassword.vue');
 const routes = [
