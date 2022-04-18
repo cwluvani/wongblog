@@ -1,6 +1,6 @@
 <template>
   <div class="reset-password">
-    <Modal />
+    <Modal v-if="modalActive" :modalMessage="modalMessage" @close-modal="closeModal"/>
     <Loading />
     <div class="form-wrap">
       <form class="reset">
@@ -33,11 +33,19 @@ export default {
   },
 
   setup() {
-    
-    const email = ref(null);
+    const email = ref('');
+    const modalActive = ref(false);
+    const modalMessage = ref('');
+    const closeModal = () => {
+      modalActive.value = !modalActive.value;
+      email.value = '';
+    };
 
     return {
-      email
+      email,
+      modalActive,
+      modalMessage,
+      closeModal
     }
   }
 }
