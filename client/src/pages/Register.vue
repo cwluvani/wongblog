@@ -29,8 +29,9 @@
           <input type="text" placeholder="Password" v-model="password">
           <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="lock-alt" class="icon svg-inline--fa fa-lock-alt fa-w-14" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M400 224h-24v-72C376 68.2 307.8 0 224 0S72 68.2 72 152v72H48c-26.5 0-48 21.5-48 48v192c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V272c0-26.5-21.5-48-48-48zM264 392c0 22.1-17.9 40-40 40s-40-17.9-40-40v-48c0-22.1 17.9-40 40-40s40 17.9 40 40v48zm32-168H152v-72c0-39.7 32.3-72 72-72s72 32.3 72 72v72z"></path></svg>
         </div>
+        <div v-show="error" class="error"> {{ errorMsg }} </div>
       </div>
-      <button>Sign Up</button>
+      <button @click.prevent="register">Sign Up</button>
       <div class="angle"></div>
     </form>
     <div class="background"></div>
@@ -39,6 +40,10 @@
 
 <script>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+// import firebase from 'firebase/app';
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import { db, firebaseApp } from '../firebase/firebaseInit';
 
 export default {
   name: 'Register',
@@ -47,19 +52,54 @@ export default {
   },
 
   setup() {
+    const router = useRouter();
 
-    const email = ref(null);
-    const password = ref(null);
-    const firstName = ref(null);
-    const lastName = ref(null);
-    const userName = ref(null);
+    const email = ref('');
+    const password = ref('');
+    const firstName = ref('');
+    const lastName = ref('');
+    const userName = ref('');
+    const error = ref(null);
+    const errorMsg = ref('');
+
+    const register = async () => {
+      if (
+        email.value !== '' &&
+        password.value !== '' &&
+        firstName.value !== '' &&
+        lastName.value !== '' &&
+        userName.value !== ''
+      ) {
+        error.value = false;
+        errorMsg.value = '';
+        const firebaseAuth = await getAuth(firebaseApp);
+        const createUser = await createUserWithEmailAndPassword(firebaseAuth, email, password);
+        const result = await createUser;
+        const database = db.collection('user').doc(result.user.id);
+        await database.set({
+          firstName: firstName.value,
+          lastName: lastName.value,
+          userName: userName.value,
+          email: email.value
+        });
+        router.push({ name: 'Home' });
+        return;
+      }
+
+      error.value = true;
+      errorMsg.value = 'Please fill out all the fields!';
+      return;
+    };
 
     return {
       email,
       password,
       firstName,
       lastName,
-      userName
+      userName,
+      register,
+      error,
+      errorMsg
     }
   }
 }

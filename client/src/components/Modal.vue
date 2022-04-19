@@ -24,6 +24,7 @@ export default {
       const closeModal = () => {
         emit('closeModal');
       };
+      
       return {
         closeModal
       }

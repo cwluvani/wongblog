@@ -1,7 +1,11 @@
 <template>
   <div class="reset-password">
-    <Modal v-if="modalActive" :modalMessage="modalMessage" @close-modal="closeModal"/>
-    <Loading />
+    <Modal 
+      v-if="modalActive" 
+      :modalMessage="modalMessage" 
+      @close-modal="closeModal"
+    />
+    <Loading v-if="loading"/>
     <div class="form-wrap">
       <form class="reset">
         <h2>Reset Password</h2>
@@ -41,11 +45,14 @@ export default {
       email.value = '';
     };
 
+    const loading = ref(false);
+
     return {
       email,
       modalActive,
       modalMessage,
-      closeModal
+      closeModal,
+      loading
     }
   }
 }
