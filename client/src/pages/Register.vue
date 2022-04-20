@@ -43,6 +43,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 // import firebase from 'firebase/app';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, collection, setDoc } from 'firebase/firestore';
 import { db, firebaseApp } from '../firebase/firebaseInit';
 
 export default {
@@ -72,24 +73,32 @@ export default {
       ) {
         error.value = false;
         errorMsg.value = '';
-        const firebaseAuth = await getAuth(firebaseApp);
-        const createUser = await createUserWithEmailAndPassword(firebaseAuth, email, password);
-        const result = await createUser;
-        const database = db.collection('user').doc(result.user.id);
-        await database.set({
-          firstName: firstName.value,
-          lastName: lastName.value,
-          userName: userName.value,
-          email: email.value
-        });
+        const firebaseAuth = getAuth(firebaseApp);
+        // get userCredential
+        try {
+          const createUser = await createUserWithEmailAndPassword(firebaseAuth, email.value, password.value);
+          // const result = await createUser;
+          // get document reference
+          collection(db, 'users');
+          const database = doc(db, 'users', createUser.user.uid);
+          await setDoc(database, {
+            firstName: firstName.value,
+            lastName: lastName.value,
+            userName: userName.value,
+            email: email.value
+          });
+        } catch(err) {
+          console.error(err);
+          return;
+        }
+        // navigate to Home page after setDoc() successfully}
         router.push({ name: 'Home' });
         return;
-      }
-
-      error.value = true;
-      errorMsg.value = 'Please fill out all the fields!';
-      return;
-    };
+    }
+    error.value = true;
+    errorMsg.value = 'Please fill out all the fields!';
+    return;
+  };
 
     return {
       email,

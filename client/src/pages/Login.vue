@@ -21,7 +21,7 @@
       <router-link class="forgot-password" :to="{ name: 'ForgotPassword' }">
         Forgot your password?</router-link
       >
-      <button>Sign In</button>
+      <button @click.prevent="signIn">Sign In</button>
       <div class="angle"></div>
     </form>
     <div class="background"></div>
@@ -30,6 +30,9 @@
 
 <script>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+// import { firebaseApp, db } from '../firebase/firebaseInit';
 
 export default {
   name: 'login',
@@ -38,15 +41,35 @@ export default {
   },
 
   setup() {
+    const router = useRouter();
 
-    const email = ref(null);
-    const password = ref(null);
-    const user = ref(null);
+    const email = ref('');
+    const password = ref('');
+    const error = ref(null);
+    const errorMsg = ref('');
+
+    const signIn = async () => {
+      const auth = getAuth();
+      try {
+          await signInWithEmailAndPassword(auth, email.value, password.value)
+                  .catch((rejectedError) => {
+                    error.value = true;
+                    errorMsg.value = rejectedError.message;
+                    return;
+                  });
+          router.push({ name: 'Home' });
+          error.value = false;
+          errorMsg.value = '';
+          console.log(auth.currentUser.uid);
+      } catch(error) { console.log(`Oops, there's an error: ${error}`); }
+    };
 
     return {
       email,
       password,
-      user
+      error,
+      errorMsg,
+      signIn
     }
   }
 }
