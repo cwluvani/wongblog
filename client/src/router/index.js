@@ -9,6 +9,8 @@ const Blogs = () => import('../pages/Blogs.vue');
 import Login from '../pages/Login.vue';
 const Register = () => import('../pages/Register.vue');
 const ForgotPassword = () => import('../pages/ForgotPassword.vue');
+const Profile = () => import('../pages/Profile.vue');
+const Admin = () => import('../pages/Admin.vue');
 const routes = [
     {
         path: '/',
@@ -50,6 +52,16 @@ const routes = [
     {
         path: '/viewblog',
         name: 'ViewBlog'
+    },
+    {
+        path: '/profile',
+        name: 'Profile',
+        component: Profile
+    },
+    {
+        path: '/admin',
+        name: 'Admin',
+        component: Admin
     }
 ];
 

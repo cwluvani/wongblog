@@ -1,3 +1,5 @@
+import { doc } from 'firebase/firestore';
+
 export default {
     newBlogPost: (state, payload) => {
         state.blogHTML = payload;

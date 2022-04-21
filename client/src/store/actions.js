@@ -1,3 +1,6 @@
+import { db } from '../firebase/firebaseInit';
+import firebase from 'firebase/app';
+
 // export global action
 export default {
     getCurrentUser: async ({ commit }, user) => {
