@@ -13,9 +13,9 @@
 import Navigation from './components/Navigation.vue';
 import Footer from './components/Footer.vue';
 import { useRoute } from 'vue-router';
-import { useStore } from 'vuex';
+// import { useStore } from 'vuex';
 import { ref, watch } from 'vue';
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+// import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 export default {
   name: 'app',
@@ -25,7 +25,7 @@ export default {
   },
   setup() {
     const route = useRoute();
-    const store = useStore();
+    // const store = useStore();
 
     /** Is navigation show on top of the page ? */
     const navigation = ref(null);
@@ -49,14 +49,14 @@ export default {
     );
     checkRoute();
 
-    const auth = getAuth();
-    onAuthStateChanged(auth, (user) => {
-      store.commit('updateUser', user);
-      if (user) {
-        store.dispatch('getCurrentUser', user);
-      }
-    });
-    store.dispatch('getPost');
+    // const auth = getAuth();
+    // onAuthStateChanged(auth, (user) => {
+    //   store.commit('updateUser', user);
+    //   if (user) {
+    //     store.dispatch('getCurrentUser', user);
+    //   }
+    // });
+    // store.dispatch('getPost');
 
     return {
       checkRoute,

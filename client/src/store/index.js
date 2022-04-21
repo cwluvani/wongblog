@@ -1,6 +1,7 @@
 import { createStore } from 'vuex'
 import mutations from './mutations'
-import action from './action'
+import actions from './actions'
+import getters from './getters'
 
 const state = {
     sampleBlogCard: [
@@ -37,11 +38,28 @@ const state = {
             blogCoverPhoto: "designed-for-everyone"
         }
     ],
-    editPost: null
+    blogPosts: [],
+    postLoaded: null,
+    blogHTML: "Write your blog title here...",
+    blogTitle: "",
+    blogPhotoName: "",
+    blogPhotoFileURL: null,
+    blogPhotoPreview: null,
+    editPost: null,
+    user: null,
+    profileAdmin: null,
+    profileEmail: null,
+    profileFirstName: null,
+    profileLastName: null,
+    profileUsername: null,
+    profileId: null,
+    profileInitials: null,
 }
 
 export default createStore({
-    action,
+    actions,
     mutations,
     state,
+    getters,
+    modules: {}
 })
