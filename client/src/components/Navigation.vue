@@ -11,7 +11,7 @@
                     <router-link class="link" to = "#">Create Post</router-link>
                     <router-link class="link" :to="{ name: 'Login' }">Login/Register</router-link>
                 </ul>
-                <div v-if="false" ref="profile" class="profile" @click.self="toggleProfileMenu">
+                <div v-if="true" ref="profile" class="profile" @click.self="toggleProfileMenu">
                   <span>Chris</span>
                   <div v-show="profileMenu" class="profile-menu">
                     <div class="info">
@@ -107,7 +107,6 @@ export default {
           signOut,
           toggleProfileMenu,
           profileMenu,
-          
         }
     },
 }

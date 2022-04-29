@@ -3,7 +3,7 @@
       <BlogPost :post="welcomeScreen" />
       <BlogPost
        v-for="(post, index) in sampleBlogPost"
-       :key="index" 
+       :key="index"
        :post="post"
       />
 
@@ -20,7 +20,8 @@
           </div>
       </div>
 
-      <div  class="updates">
+<!-- should add login judgement to hide -->
+      <div class="updates">
           <div class="container">
               <h2>never miss a post. Register for your free account today!</h2>
               <router-link class="router-button" to="#">

@@ -47,7 +47,10 @@ const routes = [
     {
         path: '/forgot-password',
         name: 'ForgotPassword',
-        component: ForgotPassword
+        component: ForgotPassword,
+        meta: {
+            title: 'ForgotPassword'
+        }
     },
     {
         path: '/viewblog',
@@ -56,12 +59,18 @@ const routes = [
     {
         path: '/profile',
         name: 'Profile',
-        component: Profile
+        component: Profile,
+        meta: {
+            title: 'Profile'
+        }
     },
     {
         path: '/admin',
         name: 'Admin',
-        component: Admin
+        component: Admin,
+        meta: {
+            title: 'Admin'
+        }
     }
 ];
 
