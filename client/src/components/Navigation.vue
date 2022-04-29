@@ -11,9 +11,9 @@
                     <router-link class="link" to = "#">Create Post</router-link>
                     <router-link class="link" :to="{ name: 'Login' }">Login/Register</router-link>
                 </ul>
-                <div ref="profile" class="profile">
+                <div v-if="false" ref="profile" class="profile" @click.self="toggleProfileMenu">
                   <span>Chris</span>
-                  <div class="profile-menu">
+                  <div v-show="profileMenu" class="profile-menu">
                     <div class="info">
                       <p class="initials"></p>
                       <div class="right">
@@ -90,6 +90,11 @@ export default {
           window.location.reload();
         };
 
+        const profileMenu = ref(null);
+        const toggleProfileMenu = () => {
+          profileMenu.value = !profileMenu.value;
+        };
+
 
         // beforecreated & created life cycle methods
         checkScreen();
@@ -99,18 +104,11 @@ export default {
           mobile,
           mobileNav,
           toggleMobileNav,
-          signOut
+          signOut,
+          toggleProfileMenu,
+          profileMenu,
+          
         }
-    },
-
-    data() {
-        return {
-            
-        }
-    },
-
-    methods: {
-      
     },
 }
 </script>
