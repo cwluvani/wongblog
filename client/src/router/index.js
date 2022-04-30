@@ -11,6 +11,7 @@ const Register = () => import('../pages/Register.vue');
 const ForgotPassword = () => import('../pages/ForgotPassword.vue');
 const Profile = () => import('../pages/Profile.vue');
 const Admin = () => import('../pages/Admin.vue');
+const CreatePost = () => import('../pages/CreatePost.vue');
 const routes = [
     {
         path: '/',
@@ -30,8 +31,12 @@ const routes = [
         }
     },
     {
-        path: '/createPost',
+        path: '/create-post',
         name: 'CreatePost',
+        component: CreatePost,
+        meta: {
+            title: 'Create Post'
+        }
 
     },
     {
@@ -49,7 +54,7 @@ const routes = [
         name: 'ForgotPassword',
         component: ForgotPassword,
         meta: {
-            title: 'ForgotPassword'
+            title: 'Forgot Password'
         }
     },
     {
