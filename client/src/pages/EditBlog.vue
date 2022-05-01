@@ -22,7 +22,7 @@
         <vue-editor v-model="blogHTML"></vue-editor>
       </div>
       <div class="blog-actions">
-        <button>Publish Blog</button>
+        <button>Save Changes</button>
         <router-link class="router-button" :to="{ name: 'BlogPreview' }"
           >Post Preview</router-link
         >

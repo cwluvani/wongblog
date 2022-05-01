@@ -13,6 +13,7 @@
 import { ref } from '@vue/reactivity'
 import { onMounted } from '@vue/runtime-core';
 import { useRoute } from 'vue-router';
+import { useStore } from 'vuex';
 export default {
     name: 'ViewBlog',
     components: {
@@ -20,6 +21,7 @@ export default {
     },
 
     setup() {
+      const store = useStore();
       const currentBlog = ref(null);
       const route = useRoute();
       onMounted(async () => {

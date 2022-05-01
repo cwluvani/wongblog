@@ -121,4 +121,9 @@ router.beforeEach((to, from, next) => {
     next();
 });
 
+// remember to check meta info
+// router.beforeEach((to, from, next) => {
+
+// });
+
 export default router;
