@@ -12,6 +12,10 @@ const ForgotPassword = () => import('../pages/ForgotPassword.vue');
 const Profile = () => import('../pages/Profile.vue');
 const Admin = () => import('../pages/Admin.vue');
 const CreatePost = () => import('../pages/CreatePost.vue');
+const BlogPreview = () => import('../pages/BlogPreview.vue');
+const ViewBlog = () => import('../pages/ViewBlog.vue');
+const EditBlog = () => import('../pages/EditBlog.vue');
+
 const routes = [
     {
         path: '/',
@@ -35,7 +39,9 @@ const routes = [
         name: 'CreatePost',
         component: CreatePost,
         meta: {
-            title: 'Create Post'
+            title: 'Create Post',
+            requiresAuth: true,
+            requiresAdmin: true
         }
 
     },
@@ -58,10 +64,6 @@ const routes = [
         }
     },
     {
-        path: '/viewblog',
-        name: 'ViewBlog'
-    },
-    {
         path: '/profile',
         name: 'Profile',
         component: Profile,
@@ -76,12 +78,41 @@ const routes = [
         meta: {
             title: 'Admin'
         }
+    },
+    {
+        path: '/post-preview',
+        name: 'BlogPreview',
+        component: BlogPreview,
+        meta: {
+            title: 'Preview Blog Post',
+            requriesAuth: true,
+            requiresAdmin: true
+        }
+    },
+    {
+        path: '/view-blog/:blogid',
+        name: 'ViewBlog',
+        component: ViewBlog,
+        meta: {
+            title: "View Blog Post",
+            requiresAuth: false
+        }
+    },
+    {
+        path: '/edit-blog/:blogid',
+        name: 'EditBlog',
+        component: EditBlog,
+        meta: {
+            title: 'Edit BLog Post',
+            requiresAuth: true,
+            requiresAdmin: true
+        }
     }
 ];
 
 const router = createRouter({
     history: createWebHistory(),
-    routes
+    routes,
 });
 
 // global navigation guard

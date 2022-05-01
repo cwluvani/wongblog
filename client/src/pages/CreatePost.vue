@@ -1,91 +1,118 @@
 <template>
   <div class="create-post">
-      <BlogCoverPreview v-show="false"/>
-      <Loading v-show="false"/>
+    <BlogCoverPreview v-show="false" />
+    <Loading v-show="loading" />
 
-      <div class="container">
-          <div class="err-message">
-              <p><span>Error:</span>{{ errorMsg }}</p>
-          </div>
-          <div class="blog-info">
-              <input type="text" placeholder="Enter Blog Title" />
-              <div class="upload-file">
-                  <label for="blog-photo">Upload Cover Photo</label>
-                  <input type="file" ref="blogPhoto" id="blog-photo" />
-                  <button class="preview">
-                      Preview Photo
-                  </button>
-                  <span>File Chose: {{ this.$store.state.blogPhotoName }}</span>
-              </div>
-          </div>
-          <div class="editor">
-              <vue-editor></vue-editor>
-          </div>
-          <div class="blog-actions">
-              <button>Publish Blog</button>
-              <router-link class="router-button" :to="{ name: 'BlogPreview' }">Post Preview</router-link>
-          </div>
+    <div class="container">
+      <div :class="{ invisible: !error }" class="err-message">
+        <p><span>Error:</span>{{ errorMsg }}</p>
       </div>
+      <div class="blog-info">
+        <input type="text" placeholder="Enter Blog Title" v-model="blogTitle"/>
+        <div class="upload-file">
+          <label for="blog-photo">Upload Cover Photo</label>
+          <input type="file" ref="blogPhoto" id="blog-photo" @change="fileChange" accept=".png, .jpg, .jpeg" />
+          <button class="preview" :class="{ 'button-inactive': !this.$store.state.blogPhotoFileURL }">
+            Preview Photo
+          </button>
+          <span>File Chose: {{ this.$store.state.blogPhotoName }}</span>
+        </div>
+      </div>
+      <div class="editor">
+        <vue-editor v-model="blogHTML"></vue-editor>
+      </div>
+      <div class="blog-actions">
+        <button>Publish Blog</button>
+        <router-link class="router-button" :to="{ name: 'BlogPreview' }"
+          >Post Preview</router-link
+        >
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import BlogCoverPreview from '../components/BlogCoverPreview.vue'
-import Loading from '../components/Loading.vue';
-import { reactive, ref } from '@vue/reactivity';
-import { useStore } from 'vuex';
-import Quill from 'quill'
+import BlogCoverPreview from "../components/BlogCoverPreview.vue";
+import Loading from "../components/Loading.vue";
+import { computed, reactive, ref } from "@vue/reactivity";
+import { useStore } from "vuex";
+// import Quill from "quill";
+import { VueEditor, Quill } from 'vue3-editor'
 
 window.Quill = Quill;
-const ImageResize = require('quill-image-resize-module').default;
-Quill.register('modules/imageResize', ImageResize);
+const ImageResize = require("quill-image-resize-module").default;
+Quill.register("modules/imageResize", ImageResize);
 
 export default {
-    name: 'CreatePost',
-    components: {
-        BlogCoverPreview,
-        Loading
-    },
+  name: "CreatePost",
+  components: {
+    BlogCoverPreview,
+    Loading,
+    VueEditor
+  },
 
-    setup() {
-        const store = useStore();
+  setup() {
+    const store = useStore();
 
-        const error = ref(null);
-        const errorMsg = ref(null);
-        const loading = ref(null);
-        const file = ref(null);
-        const editorSettings = reactive({
-            modules: {
-                ImageResize: {},
-            },
-        });
+    const error = ref(null);
+    const errorMsg = ref(null);
+    const loading = ref(null);
+    const file = ref(null);
+    const editorSettings = reactive({
+      modules: {
+        ImageResize: {},
+      },
+    });
 
-        const blogPhoto = ref(null);
-        const fileChange = function() {
-            file.value = blogPhoto.value.files[0];
-            const fileName = file.value.name;
-            store.commit('fileNameChange', fileName);
-            store.commit('createFileURL', URL.createObjectURL(file.value));
-        };
-        const openPreview = function() {
-            store.commit('openPhotoPreview');
-        };
-        const imageHandler = function(file, Editor, cursorLocation, resetUploader) {
-            const storageRef = {
-                child: function(fileName) {
-                    return fileName;
-                }
-            };
-        };
-        return {
-            error,
-            errorMsg,
-            loading,
-            file,
-            editorSettings
-        }
-    }
-}
+    // const blogPhoto = ref(null);
+    // const fileChange = function () {
+    //   file.value = blogPhoto.value.files[0];
+    //   const fileName = file.value.name;
+    //   store.commit("fileNameChange", fileName);
+    //   store.commit("createFileURL", URL.createObjectURL(file.value));
+    // };
+    // const openPreview = function () {
+    //   store.commit("openPhotoPreview");
+    // };
+    // const imageHandler = function (
+    //   file,
+    //   Editor,
+    //   cursorLocation,
+    //   resetUploader
+    // ) {
+      
+    // };
+    // const openPreview = function() {
+    //   store.commit('openPhotoPreview');
+    // };
+    // const uploadBlog = function() {
+
+    // };
+
+    const profileId = computed(() => store.state.profileId);
+    const blogCoverPhotoName = computed(() => store.state.blogPhotoName);
+    const blogTitle = computed({
+      get: () => store.state.blogTitle,
+      set: payload => store.commit('updateBlogTitle', payload)
+    });
+    const blogHTML = computed({
+      get: () => store.state.blogHTML,
+      set: payload => store.commit('newBlogPost', payload)
+    });
+
+    return {
+      error,
+      errorMsg,
+      loading,
+      file,
+      editorSettings,
+      profileId,
+      blogCoverPhotoName,
+      blogTitle,
+      blogHTML
+    };
+  },
+};
 </script>
 
 <style lang="scss" scoped>
