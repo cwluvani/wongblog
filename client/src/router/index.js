@@ -24,7 +24,6 @@ const routes = [
         meta: {
             title: 'Home'
         },
-        alias: '/home'
     },
     {
         path: '/blogs',
