@@ -86,6 +86,7 @@ export default {
           router.push({ name: 'Home' });
           return;
         } catch(err) {
+          console.log(err)
           error.value = true;
           errorMsg.value = err.message;
           return;

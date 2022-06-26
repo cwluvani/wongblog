@@ -5,15 +5,18 @@ import firebase from 'firebase/app';
 // export global action
 export default {
     getCurrentUser: async ({ commit }, user) => {
-        const database = await db.collection('users').doc(firebase.auth().currentUser.uid)
-                            .catch(err => console.log(err.message));
-        const dbResult = await database.get()
-                            .catch(err => console.log(err.message));
-        commit('setProfileInfo', dbResult);
-        commit('setProfileInitials');
-        const token = await user.getIdTokenResult();
-        const admin = await token.claims.admin;
-        commit('setProfileAdmin', admin);
+        try {
+            const database = await db.collection('users').doc(firebase.auth().currentUser.uid);
+            const dbResult = await database.get()
+            commit('setProfileInfo', dbResult);
+            commit('setProfileInitials');
+            const token = await user.getIdTokenResult();
+            const admin = await token.claims.admin;
+            commit('setProfileAdmin', admin);
+        } catch(err) {
+            console.log(err.message);
+        }
+       
     },
     getPost: async ({state}) => {
         const dataBase = await db.collection("blogPosts").orderBy("date", "desc");
