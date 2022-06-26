@@ -8,18 +8,18 @@
                 <ul v-show="!mobile">
                     <router-link class="link" :to="{ name: 'Home' }">Home</router-link>
                     <router-link class="link" :to="{ name: 'Blogs' }">Blog</router-link>
-                    <router-link class="link" :to="{ name: 'CreatePost' }">Create Post</router-link>
-                    <router-link class="link" :to="{ name: 'Login' }">Login/Register</router-link>
+                    <router-link v-if="admin" class="link" :to="{ name: 'CreatePost' }">Create Post</router-link>
+                    <router-link v-if="!user" class="link" :to="{ name: 'Login' }">Login</router-link>
                 </ul>
-                <div v-if="true" ref="profile" class="profile" @click.self="toggleProfileMenu">
-                  <span>Chris</span>
+                <div v-if="user" :class="{ 'mobile-user-menu': mobile }" ref="profile" class="profile" @click.self="toggleProfileMenu">
+                  <span> {{ store.state.profileInitials }} </span>
                   <div v-show="profileMenu" class="profile-menu">
                     <div class="info">
-                      <p class="initials"></p>
+                      <p class="initials"> {{ store.state.profileInitials }} </p>
                       <div class="right">
-                        <p> Chris </p>
-                        <p> ChrisWong </p>
-                        <p> cwluvani@github.com </p>
+                        <p> {{ store.state.profileFirstName }} </p>
+                        <p> {{ store.state.profileUsername }} </p>
+                        <p> {{ store.state.profileEmail }} </p>
                       </div>
                     </div>
                     <div class="options">
@@ -30,7 +30,7 @@
                         </router-link>
                       </div>
                       <div class="option">
-                        <router-link v-if="true" class="option" :to="{ name: 'Admin' }">
+                        <router-link v-if="admin" class="option" :to="{ name: 'Admin' }">
                           <svg aria-hidden="true" focusable="false" data-prefix="fal" data-icon="user-crown" class="icon svg-inline--fa fa-user-crown fa-w-14" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M313.6 320c-28.71 0-42.6 16-89.6 16-47.09 0-60.82-16-89.6-16C60.17 320 0 380.17 0 454.4v9.6c0 26.51 21.49 48 48 48h352c26.51 0 48-21.49 48-48v-9.6c0-74.23-60.17-134.4-134.4-134.4zM416 464c0 8.82-7.18 16-16 16H48c-8.82 0-16-7.18-16-16v-9.6C32 397.94 77.94 352 134.4 352c19.38 0 39.33 16 89.6 16 49.4 0 70.66-16 89.6-16 56.46 0 102.4 45.94 102.4 102.4v9.6zM224 288c70.7 0 128-57.31 128-128V0l-64 32-64-32-64 32L96 0v160c0 70.69 57.31 128 128 128zM128 51.78l32 16 64-32 64 32 32-16V112H128V51.78zm0 92.22h192v16c0 52.93-43.06 96-96 96s-96-43.07-96-96v-16z"></path></svg>
                           <p>Admin</p>
                         </router-link>
@@ -49,15 +49,18 @@
             <ul class="mobile-nav" v-show="mobileNav">
                 <router-link class="link" :to="{ name: 'Home' }">Home</router-link>
                 <router-link class="link" :to="{ name: 'Blogs' }">Blog</router-link>
-                <router-link class="link" :to="{ name: 'CreatePost' }">Create Post</router-link>
-                <router-link class="link" :to="{ name: 'Login' }">Login/Register</router-link>
+                <router-link v-if="admin" class="link" :to="{ name: 'CreatePost' }">Create Post</router-link>
+                <router-link v-if="!user" class="link" :to="{ name: 'Login' }">Login/Register</router-link>
             </ul>
         </transition>
     </header>
 </template>
 
 <script>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+import { useStore } from 'vuex';
+import firebase from 'firebase/app';
+import 'firebase/auth';
 
 export default {
     name: 'navigation',
@@ -66,9 +69,12 @@ export default {
     },
 
     setup() {
+        const store = useStore();
+
         const mobile = ref(null);
         const mobileNav = ref(false);
         const windowWidth = ref(null);
+        const profileMenu = ref(null);
 
         const checkScreen = () => {
           windowWidth.value = window.innerWidth;
@@ -86,27 +92,31 @@ export default {
         };
 
         const signOut = () => {
-
+          firebase.auth().signOut();
           window.location.reload();
         };
 
-        const profileMenu = ref(null);
         const toggleProfileMenu = () => {
           profileMenu.value = !profileMenu.value;
         };
 
+        const user = computed( () => store.state.user );
+        const admin = computed( () => store.state.profileAdmin );
 
         // beforecreated & created life cycle methods
         checkScreen();
         window.addEventListener("resize", checkScreen, false);
         
         return {
+          store,
           mobile,
           mobileNav,
           toggleMobileNav,
           signOut,
           toggleProfileMenu,
           profileMenu,
+          user,
+          admin,
         }
     },
 }

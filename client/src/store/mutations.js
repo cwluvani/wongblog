@@ -1,4 +1,3 @@
-import { doc } from 'firebase/firestore';
 
 export default {
     newBlogPost: (state, payload) => {
@@ -32,7 +31,7 @@ export default {
     updateUser(state, payload) {
         state.user = payload;
     },
-    setProfileInfo: (state) => {
+    setProfileInfo: (state, doc) => {
         state.profileId = doc.id;
         state.profileEmail = doc.data().email;
         state.profileFirstName = doc.data().firstName;
@@ -42,7 +41,8 @@ export default {
     },
     setProfileInitials: (state) => {
         state.profileInitials = 
-            state.profileFirstName.match(/(\b\S)?/g).join('') +
+            state.profileFirstName.match(/(\b\S)?/g).join('')
+                +
             state.profileLastName.match(/(\b\S)?/g).join('');
     },
     setProfileAdmin: (state, payload) => {

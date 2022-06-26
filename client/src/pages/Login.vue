@@ -31,11 +31,11 @@
 <script>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-// import { firebaseApp, db } from '../firebase/firebaseInit';
+import firebase from 'firebase/app';
+import 'firebase/auth';
 
 export default {
-  name: 'login',
+  name: 'Login',
   components: {
 
   },
@@ -49,19 +49,20 @@ export default {
     const errorMsg = ref('');
 
     const signIn = async () => {
-      const auth = getAuth();
       try {
-          await signInWithEmailAndPassword(auth, email.value, password.value)
-                  .catch((rejectedError) => {
-                    error.value = true;
-                    errorMsg.value = rejectedError.message;
-                    return;
-                  });
-          router.push({ name: 'Home' });
-          error.value = false;
-          errorMsg.value = '';
-          console.log(auth.currentUser.uid);
-      } catch(error) { console.log(`Oops, there's an error: ${error}`); }
+        await firebase
+        .auth()
+        .signInWithEmailAndPassword(email.value, password.value);
+      
+        router.push({ name: 'Home' });
+        error.value = false;
+        errorMsg.value = '';
+        
+        console.log(firebase.auth().currentUser.uid);
+      } catch(err) {
+        error.value = true;
+        errorMsg.value = err.message;
+      }
     };
 
     return {

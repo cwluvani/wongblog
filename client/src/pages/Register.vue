@@ -41,10 +41,9 @@
 <script>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-// import firebase from 'firebase/app';
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
-import { doc, collection, setDoc } from 'firebase/firestore';
-import { db, firebaseApp } from '../firebase/firebaseInit';
+import firebase from 'firebase/app';
+import 'firebase/auth';
+import db from '../firebase/firebaseInit';
 
 export default {
   name: 'Register',
@@ -73,27 +72,24 @@ export default {
       ) {
         error.value = false;
         errorMsg.value = '';
-        const firebaseAuth = getAuth(firebaseApp);
-        // get userCredential
         try {
-          const createUser = await createUserWithEmailAndPassword(firebaseAuth, email.value, password.value);
-          // const result = await createUser;
-          // get document reference
-          collection(db, 'users');
-          const database = doc(db, 'users', createUser.user.uid);
-          await setDoc(database, {
+          const firebaseAuth = await firebase.auth();
+          const createUser = await firebaseAuth.createUserWithEmailAndPassword(email.value, password.value);
+          const result = await createUser;
+          const dataBase = db.collection('users').doc(result.user.uid);
+          await dataBase.set({
             firstName: firstName.value,
             lastName: lastName.value,
             userName: userName.value,
-            email: email.value
+            email: email.value,
           });
+          router.push({ name: 'Home' });
+          return;
         } catch(err) {
-          console.error(err);
+          error.value = true;
+          errorMsg.value = err.message;
           return;
         }
-        // navigate to Home page after setDoc() successfully}
-        router.push({ name: 'Home' });
-        return;
     }
     error.value = true;
     errorMsg.value = 'Please fill out all the fields!';

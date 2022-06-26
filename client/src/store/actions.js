@@ -1,4 +1,5 @@
-import { db } from '../firebase/firebaseInit';
+import db from '../firebase/firebaseInit';
+import 'firebase/auth';
 import firebase from 'firebase/app';
 
 // export global action
