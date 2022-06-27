@@ -36,7 +36,7 @@ export default {
         state.profileEmail = doc.data().email;
         state.profileFirstName = doc.data().firstName;
         state.profileLastName = doc.data().lastName;
-        state.profileUsername = doc.data().username;
+        state.profileUserName = doc.data().userName;
         console.log(state.profileId);
     },
     setProfileInitials: (state) => {

@@ -50,7 +50,7 @@ export default {
         await dataBase.update({
           firstName: state.profileFirstName,
           lastName: state.profileLastName,
-          username: state.profileUsername,
+          username: state.profileUserName,
         });
         commit('setProfileInitials');
     },

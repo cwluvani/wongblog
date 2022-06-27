@@ -51,7 +51,7 @@ const state = {
     profileEmail: null,
     profileFirstName: null,
     profileLastName: null,
-    profileUsername: null,
+    profileUserName: null,
     profileId: null,
     profileInitials: null,
 }

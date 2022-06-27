@@ -21,7 +21,7 @@
                   <input type="text" id="lastName" v-model="lastName">
               </div>
               <div class="input">
-                  <label for="userName">userName:</label>
+                  <label for="userName">UserName:</label>
                   <input type="text" id="userName" v-model="userName">
               </div>
               <div class="input">
@@ -47,7 +47,7 @@ export default {
 
     setup() {
         const store = useStore();
-        const modalMessage = ref('Changes were saved');
+        const modalMessage = ref('Changes were saved!');
         const modalActive = ref(null);
 
         const firstName = computed({
