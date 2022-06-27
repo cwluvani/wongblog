@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-      <BlogPost :post="welcomeScreen" />
+      <BlogPost v-if="!user" :post="welcomeScreen" />
       <BlogPost
        v-for="(post, index) in sampleBlogPost"
        :key="index"
@@ -21,10 +21,10 @@
       </div>
 
 <!-- should add login judgement to hide -->
-      <div class="updates">
+      <div v-if="!user" class="updates">
           <div class="container">
               <h2>never miss a post. Register for your free account today!</h2>
-              <router-link class="router-button" to="#">
+              <router-link class="router-button" :to="{name: 'Register'}">
                   Register for WongBlogs <svg aria-hidden="true" focusable="false" data-prefix="fal" data-icon="arrow-right" class="arrow arrow-light svg-inline--fa fa-arrow-right fa-w-14" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M216.464 36.465l-7.071 7.07c-4.686 4.686-4.686 12.284 0 16.971L387.887 239H12c-6.627 0-12 5.373-12 12v10c0 6.627 5.373 12 12 12h375.887L209.393 451.494c-4.686 4.686-4.686 12.284 0 16.971l7.071 7.07c4.686 4.686 12.284 4.686 16.97 0l211.051-211.05c4.686-4.686 4.686-12.284 0-16.971L233.434 36.465c-4.686-4.687-12.284-4.687-16.97 0z"></path></svg>
               </router-link>
           </div>
@@ -54,13 +54,19 @@ export default {
             welcomeScreen: true,
             photo: "coding",
         });
+        const blogPostsFeed = computed(() => store.getters.blogPostsFeed);
+        const blogPostsCard = computed(() => store.getters.blogPostsCards);
+        const user = computed(() => store.state.user);
         const sampleBlogPost = computed(() => store.state.sampleBlogPost);
         const sampleBlogCard = computed(() => store.state.sampleBlogCard);
-      
+
         return {
             welcomeScreen,
             sampleBlogPost,
             sampleBlogCard,
+            blogPostsFeed,
+            blogPostsCard,
+            user
         }
     },
 

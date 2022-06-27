@@ -32,7 +32,7 @@
             <router-link class="link" :to="{ name: 'Home' }">Home</router-link>
             <router-link class="link" :to="{ name: 'Blogs' }">Blogs</router-link>
             <router-link class="link" :to="{ name: 'CreatePost' }">Create Post</router-link>
-            <router-link v-if="false" class="link" :to="{ name: 'Login' }">Login In / Register</router-link>
+            <router-link v-if="!user" class="link" :to="{ name: 'Login' }">Login In / Register</router-link>
           </ul>
         </div>
       </div>
@@ -44,6 +44,9 @@
 </template>
 
 <script>
+import { computed } from '@vue/reactivity';
+import { useStore } from 'vuex';
+
 export default {
     name: 'Footer',
     components: {
@@ -51,13 +54,14 @@ export default {
     },
     
     setup() {
+      const store = useStore();
+      const user = computed(() => store.state.user);
+      const admin = computed(() => store.state.profileAdmin);
 
-    },
-    
-    data() {
-        return {
-
-        }
+      return {
+        user,
+        admin
+      }
     },
 }
 </script>
