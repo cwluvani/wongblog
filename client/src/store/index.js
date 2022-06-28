@@ -43,7 +43,7 @@ const state = {
     blogHTML: "Write your blog title here...",
     blogTitle: "",
     blogPhotoName: "",
-    blogPhotoFileURL: '../assets/background.png',
+    blogPhotoFileURL: '',
     blogPhotoPreview: null,
     editPost: null,
     user: null,

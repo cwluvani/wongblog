@@ -7,7 +7,7 @@ export default {
         state.blogTitle = payload;
     },
     fileNameChange(state, payload) {
-        state.blogPhotoFileName = payload;
+        state.blogPhotoName = payload;
     },
     createFileURL(state, payload) {
         state.blogPhotoFileURL = payload;

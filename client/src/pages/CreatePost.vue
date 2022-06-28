@@ -1,6 +1,6 @@
 <template>
   <div class="create-post">
-    <BlogCoverPreview v-show="false" />
+    <BlogCoverPreview v-show="blogPhotoPreview" />
     <Loading v-show="loading" />
 
     <div class="container">
@@ -12,17 +12,22 @@
         <div class="upload-file">
           <label for="blog-photo">Upload Cover Photo</label>
           <input type="file" ref="blogPhoto" id="blog-photo" @change="fileChange" accept=".png, .jpg, .jpeg" />
-          <button class="preview" :class="{ 'button-inactive': !this.$store.state.blogPhotoFileURL }">
+          <button @click="openPreview" class="preview" :class="{ 'button-inactive': !blogPhotoFileURL }">
             Preview Photo
           </button>
-          <span>File Chose: {{ this.$store.state.blogPhotoName }}</span>
+          <span>File Chosen: {{ blogCoverPhotoName }}</span>
         </div>
       </div>
       <div class="editor">
-        <vue-editor v-model="blogHTML"></vue-editor>
+        <vue-editor 
+          :editorOptions="editorSettings" 
+          @image-added="imageHandler" 
+          useCustomImageHandler 
+          v-model="blogHTML" 
+        ></vue-editor>
       </div>
       <div class="blog-actions">
-        <button>Publish Blog</button>
+        <button @click="uploadBlog">Publish Blog</button>
         <router-link class="router-button" :to="{ name: 'BlogPreview' }"
           >Post Preview</router-link
         >
@@ -32,16 +37,20 @@
 </template>
 
 <script>
+import db from '../firebase/firebaseInit';
+import firebase from 'firebase/app';
+import 'firebase/storage';
+import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
+import { computed, reactive, ref, } from "vue";
+
 import BlogCoverPreview from "../components/BlogCoverPreview.vue";
 import Loading from "../components/Loading.vue";
-import { computed, reactive, ref } from "@vue/reactivity";
-import { useStore } from "vuex";
-// import Quill from "quill";
-import { VueEditor, Quill } from 'vue3-editor'
-
+import Quill from "quill";
+import { VueEditor } from 'vue3-editor'
 window.Quill = Quill;
 const ImageResize = require("quill-image-resize-module").default;
-Quill.register("modules/imageResize", ImageResize);
+Quill.register("modules/ImageResize", ImageResize);
 
 export default {
   name: "CreatePost",
@@ -53,42 +62,22 @@ export default {
 
   setup() {
     const store = useStore();
+    const router = useRouter();
 
     const error = ref(null);
     const errorMsg = ref(null);
     const loading = ref(null);
     const file = ref(null);
+    const blogPhoto = ref(null); // file-type input ref
     const editorSettings = reactive({
       modules: {
         ImageResize: {},
       },
     });
 
-    // const blogPhoto = ref(null);
-    // const fileChange = function () {
-    //   file.value = blogPhoto.value.files[0];
-    //   const fileName = file.value.name;
-    //   store.commit("fileNameChange", fileName);
-    //   store.commit("createFileURL", URL.createObjectURL(file.value));
-    // };
-    // const openPreview = function () {
-    //   store.commit("openPhotoPreview");
-    // };
-    // const imageHandler = function (
-    //   file,
-    //   Editor,
-    //   cursorLocation,
-    //   resetUploader
-    // ) {
-      
-    // };
-    // const openPreview = function() {
-    //   store.commit('openPhotoPreview');
-    // };
-    // const uploadBlog = function() {
-
-    // };
-
+    // computed value
+    const blogPhotoFileURL = computed(() => store.state.blogPhotoFileURL);
+    const blogPhotoPreview = computed(() => store.state.blogPhotoPreview);
     const profileId = computed(() => store.state.profileId);
     const blogCoverPhotoName = computed(() => store.state.blogPhotoName);
     const blogTitle = computed({
@@ -100,6 +89,68 @@ export default {
       set: payload => store.commit('newBlogPost', payload)
     });
 
+    // methods
+    const openPreview = () => store.commit('openPhotoPreview');
+    const fileChange = () => {
+      file.value = blogPhoto.value.files[0];
+      const fileName = file.value.name;
+      store.commit('fileNameChange', fileName);
+      store.commit('createFileURL', URL.createObjectURL(file.value));
+    };
+    const uploadBlog = () => {
+      if (blogTitle.value.length !== 0 && blogHTML.value.length !== 0) {
+        loading.value = true;
+        const storageRef = firebase.storage().ref();
+        const docRef = storageRef.child(`documents/BlogCoverPhotos/${store.state.blogPhotoName}`);
+        docRef.put(file.value).on(
+          'state_changed',
+          (snapshot) => {
+            console.log(snapshot);
+          },
+          (err) => {
+            console.log(err);
+            loading.value = false;
+          },
+          async () => {
+            const downloadURL = await docRef.getDownloadURL();
+            const timestamp = Date.now();
+            const dataBase = await db.collection('blogPosts').doc();
+
+            await dataBase.set({
+              blogID: dataBase.id,
+              blogHTML: blogHTML.value,
+              blogCoverPhoto: downloadURL,
+              blogCoverPhotoName: blogCoverPhotoName.value,
+              blogTitle: blogTitle.value,
+              profileId: profileId.value,
+              date: timestamp,
+            });
+            await store.dispatch('getPost');
+            loading.value = false;
+            router.push({ name: 'ViewBlog', params: { blogid: dataBase.id } });
+          }
+        )
+      }
+    };
+    const imageHandler = (file, Editor, cursorLocation, resetUploader) => {
+      const storageRef = firebase.storage().ref();
+      const docRef = storageRef.child(`documents/blogPostPhotos/${file.value.name}`);
+      docRef.put(file).on(
+        'state_changed',
+        (snapshot) => {
+          console.log(snapshot);
+        },
+        (err) => {
+          console.log(err);
+        },
+        async () => {
+          const downloadURL = await docRef.getDownloadURL();
+          Editor.insertEmbed(cursorLocation, 'image', downloadURL);
+          resetUploader();
+        }
+      )
+    };
+
     return {
       error,
       errorMsg,
@@ -108,14 +159,21 @@ export default {
       editorSettings,
       profileId,
       blogCoverPhotoName,
+      blogPhotoFileURL,
+      blogPhotoPreview,
       blogTitle,
-      blogHTML
+      blogHTML,
+      blogPhoto,
+      openPreview,
+      fileChange,
+      uploadBlog,
+      imageHandler,
     };
   },
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .create-post {
   position: relative;
   height: 100%;
