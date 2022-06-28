@@ -21,6 +21,8 @@
 
 <script>
 import { ref } from 'vue';
+import firebase from 'firebase/app';
+import 'firebase/functions';
 
 export default {
     name: 'Admin',
@@ -30,20 +32,13 @@ export default {
     inheritAttrs: false,
 
     setup() {
-        const adminEmail = ref('adminEmail');
+        const adminEmail = ref('');
         const functionMsg = ref(null);
-        
-        // imitatation
-        async function firebaseFunctionHttpsCallable() {
-            return async function(email_Object) {
-                return email_Object;
-            }
-        }
 
         const addAdmin = async function() {
-            const addAdmin = await firebaseFunctionHttpsCallable();
-            const result = await addAdmin({ email: adminEmail.value });
-            functionMsg.value = result.email;
+          const addAdmin = await firebase.functions().httpsCallable('addAdminRole');
+          const result = await addAdmin({ email: adminEmail.value });
+          functionMsg.value = result.data.message;
         };
 
         return {
