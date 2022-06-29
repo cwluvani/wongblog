@@ -47,7 +47,7 @@ import { computed, reactive, ref, } from "vue";
 import BlogCoverPreview from "../components/BlogCoverPreview.vue";
 import Loading from "../components/Loading.vue";
 import Quill from "quill";
-import { VueEditor } from 'vue3-editor'
+import { VueEditor } from 'vue3-editor';
 window.Quill = Quill;
 const ImageResize = require("quill-image-resize-module").default;
 Quill.register("modules/ImageResize", ImageResize);
@@ -99,42 +99,57 @@ export default {
     };
     const uploadBlog = () => {
       if (blogTitle.value.length !== 0 && blogHTML.value.length !== 0) {
-        loading.value = true;
-        const storageRef = firebase.storage().ref();
-        const docRef = storageRef.child(`documents/BlogCoverPhotos/${store.state.blogPhotoName}`);
-        docRef.put(file.value).on(
-          'state_changed',
-          (snapshot) => {
-            console.log(snapshot);
-          },
-          (err) => {
-            console.log(err);
-            loading.value = false;
-          },
-          async () => {
-            const downloadURL = await docRef.getDownloadURL();
-            const timestamp = Date.now();
-            const dataBase = await db.collection('blogPosts').doc();
+        if (file.value) {
+          loading.value = true;
+          const storageRef = firebase.storage().ref();
+          const docRef = storageRef.child(`documents/BlogCoverPhotos/${store.state.blogPhotoName}`);
+          docRef.put(file.value).on(
+            'state_changed',
+            (snapshot) => {
+              console.log(snapshot);
+            },
+            (err) => {
+              console.log(err);
+              loading.value = false;
+            },
+            async () => {
+              const downloadURL = await docRef.getDownloadURL();
+              const timestamp = Date.now();
+              const dataBase = await db.collection('blogPosts').doc();
 
-            await dataBase.set({
-              blogID: dataBase.id,
-              blogHTML: blogHTML.value,
-              blogCoverPhoto: downloadURL,
-              blogCoverPhotoName: blogCoverPhotoName.value,
-              blogTitle: blogTitle.value,
-              profileId: profileId.value,
-              date: timestamp,
-            });
-            await store.dispatch('getPost');
-            loading.value = false;
-            router.push({ name: 'ViewBlog', params: { blogid: dataBase.id } });
-          }
-        )
+              await dataBase.set({
+                blogID: dataBase.id,
+                blogHTML: blogHTML.value,
+                blogCoverPhoto: downloadURL,
+                blogCoverPhotoName: blogCoverPhotoName.value,
+                blogTitle: blogTitle.value,
+                profileId: profileId.value,
+                date: timestamp,
+              });
+              await store.dispatch('getPost');
+              loading.value = false;
+              router.push({ name: 'ViewBlog', params: { blogid: dataBase.id } });
+            }
+          );
+          return;
+        }
+        error.value = true;
+        errorMsg.value = 'Please ensure you uploaded a cover photo!';
+        setTimeout(() => {
+          error.value = false;
+        }, 3000);
+        return;
       }
+      error.value = true;
+      errorMsg.value = 'Please ensure Blog Title & Blog Post has been filled!';
+      setTimeout(() => {
+        error.value = false;
+      }, 3000);
+      return;
     };
     const imageHandler = (file, Editor, cursorLocation, resetUploader) => {
       const storageRef = firebase.storage().ref();
-      const docRef = storageRef.child(`documents/blogPostPhotos/${file.value.name}`);
+      const docRef = storageRef.child(`documents/blogPostPhotos/${file.name}`);
       docRef.put(file).on(
         'state_changed',
         (snapshot) => {
@@ -148,7 +163,7 @@ export default {
           Editor.insertEmbed(cursorLocation, 'image', downloadURL);
           resetUploader();
         }
-      )
+      );
     };
 
     return {
