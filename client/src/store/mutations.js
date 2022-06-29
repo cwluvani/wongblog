@@ -37,7 +37,7 @@ export default {
         state.profileFirstName = doc.data().firstName;
         state.profileLastName = doc.data().lastName;
         state.profileUserName = doc.data().userName;
-        console.log(state.profileId);
+        // console.log(state.profileId);
     },
     setProfileInitials: (state) => {
         state.profileInitials = 
@@ -47,7 +47,7 @@ export default {
     },
     setProfileAdmin: (state, payload) => {
         state.profileAdmin = payload;
-        console.log(state.profileAdmin);
+        // console.log(state.profileAdmin);
     },
     changeFirstName(state, payload) {
         state.profileFirstName = payload;

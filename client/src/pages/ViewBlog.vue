@@ -10,8 +10,7 @@
 </template>
 
 <script>
-import { ref } from '@vue/reactivity'
-import { onMounted } from '@vue/runtime-core';
+import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useStore } from 'vuex';
 export default {
@@ -25,7 +24,7 @@ export default {
       const currentBlog = ref(null);
       const route = useRoute();
       onMounted(async () => {
-        currentBlog.value = await store.state.blogPosts.filter(post => post.postID === route.params.blogid);
+        currentBlog.value = await store.state.blogPosts.filter(post => post.blogID === route.params.blogid);
       });
         return {
           currentBlog
