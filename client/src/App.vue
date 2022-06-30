@@ -1,6 +1,6 @@
 <template>
   <div class="app-wrapper">
-    <div class="app">
+    <div class="app" v-if="postLoaded">
       <Navigation v-if="!navigation" />
       <router-view></router-view>
       <Footer v-if="!navigation" />
@@ -14,7 +14,7 @@ import Navigation from './components/Navigation.vue';
 import Footer from './components/Footer.vue';
 import { useRoute } from 'vue-router';
 import { useStore } from 'vuex';
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import firebase from 'firebase/app';
 import 'firebase/auth';
 
@@ -30,7 +30,7 @@ export default {
 
     /** Is navigation show on top of the page ? */
     const navigation = ref(null);
-
+    const postLoaded = computed(() => store.state.postLoaded);
     const checkRoute = () => {
       if (route.name === 'Login'
         || route.name === 'Register'
@@ -60,7 +60,8 @@ export default {
 
     return {
       checkRoute,
-      navigation
+      navigation,
+      postLoaded,
     }
   }
 }

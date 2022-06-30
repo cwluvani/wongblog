@@ -19,7 +19,7 @@ export default {
         state.editPost = payload;
         // console.log(state.editPost);
     },
-    setProfileState(state, payload) {
+    setBlogState(state, payload) {
         state.blogTitle = payload.blogTitle;
         state.blogHTML = payload.blogHTML;
         state.blogPhotoFileURL = payload.blogCoverPhoto;

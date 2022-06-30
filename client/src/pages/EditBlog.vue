@@ -8,21 +8,35 @@
         <p><span>Error:</span>{{ errorMsg }}</p>
       </div>
       <div class="blog-info">
-        <input type="text" placeholder="Enter Blog Title" v-model="blogTitle"/>
+        <input type="text" placeholder="Enter Blog Title" v-model="blogTitle" />
         <div class="upload-file">
           <label for="blog-photo">Upload Cover Photo</label>
-          <input type="file" ref="blogPhoto" id="blog-photo" @change="fileChange" accept=".png, .jpg, .jpeg" />
-          <button class="preview" :class="{ 'button-inactive': !this.$store.state.blogPhotoFileURL }">
+          <input
+            type="file"
+            ref="blogPhoto"
+            id="blog-photo"
+            @change="fileChange"
+            accept=".png, .jpg, .jpeg"
+          />
+          <button
+            class="preview"
+            :class="{ 'button-inactive': !blogPhotoFileURL }"
+          >
             Preview Photo
           </button>
-          <span>File Chose: {{ this.$store.state.blogPhotoName }}</span>
+          <span>File Chose: {{ blogPhotoName }}</span>
         </div>
       </div>
       <div class="editor">
-        <vue-editor v-model="blogHTML"></vue-editor>
+        <vue-editor
+          v-model="blogHTML"
+          :editorOptions="editorSettings"
+          useCustomImageHandler
+          @image-added="imageHandler"
+        ></vue-editor>
       </div>
       <div class="blog-actions">
-        <button>Save Changes</button>
+        <button @click="updateBlog">Save Changes</button>
         <router-link class="router-button" :to="{ name: 'BlogPreview' }"
           >Post Preview</router-link
         >
@@ -34,81 +48,146 @@
 <script>
 import BlogCoverPreview from "../components/BlogCoverPreview.vue";
 import Loading from "../components/Loading.vue";
-import { computed, reactive, ref } from "@vue/reactivity";
+import { computed, reactive, ref, onMounted } from "vue";
 import { useStore } from "vuex";
-// import Quill from "quill";
-import { VueEditor, Quill } from 'vue3-editor'
-import { onMounted } from '@vue/runtime-core';
-import { useRoute } from 'vue-router';
+import Quill from "quill";
+import { VueEditor } from "vue3-editor";
+import { useRoute, useRouter } from "vue-router";
+import db from "../firebase/firebaseInit";
+import firebase from "firebase/app";
+import "firebase/storage";
 
 window.Quill = Quill;
 const ImageResize = require("quill-image-resize-module").default;
-Quill.register("modules/imageResize", ImageResize);
+Quill.register("modules/ImageResize", ImageResize);
 
 export default {
-  name: "CreatePost",
+  name: "EditPost",
   components: {
     BlogCoverPreview,
     Loading,
-    VueEditor
+    VueEditor,
   },
 
   setup() {
     const store = useStore();
+    const router = useRouter();
     const route = useRoute();
-
+    const routeID = ref(null);
+    const currentBlog = ref(null);
     const error = ref(null);
     const errorMsg = ref(null);
     const loading = ref(null);
     const file = ref(null);
+    const blogPhoto = ref(null); // file-type input ref
     const editorSettings = reactive({
       modules: {
         ImageResize: {},
       },
     });
 
-    // const blogPhoto = ref(null);
-    // const fileChange = function () {
-    //   file.value = blogPhoto.value.files[0];
-    //   const fileName = file.value.name;
-    //   store.commit("fileNameChange", fileName);
-    //   store.commit("createFileURL", URL.createObjectURL(file.value));
-    // };
-    // const openPreview = function () {
-    //   store.commit("openPhotoPreview");
-    // };
-    // const imageHandler = function (
-    //   file,
-    //   Editor,
-    //   cursorLocation,
-    //   resetUploader
-    // ) {
-      
-    // };
-    // const openPreview = function() {
-    //   store.commit('openPhotoPreview');
-    // };
-    // const uploadBlog = function() {
-
-    // };
-
+    // computed value
+    const blogPhotoFileURL = computed(() => store.state.blogPhotoFileURL);
+    const blogPhotoPreview = computed(() => store.state.blogPhotoPreview);
     const profileId = computed(() => store.state.profileId);
     const blogCoverPhotoName = computed(() => store.state.blogPhotoName);
     const blogTitle = computed({
       get: () => store.state.blogTitle,
-      set: payload => store.commit('updateBlogTitle', payload)
+      set: (payload) => store.commit("updateBlogTitle", payload),
     });
     const blogHTML = computed({
       get: () => store.state.blogHTML,
-      set: payload => store.commit('newBlogPost', payload)
+      set: (payload) => store.commit("newBlogPost", payload),
     });
-    
-    const routeID = ref(null);
-    const currentBlog = ref(null);
+
+    // methods
+    const openPreview = () => store.commit("openPhotoPreview");
+    const fileChange = () => {
+      file.value = blogPhoto.value.files[0];
+      const fileName = file.value.name;
+      store.commit("fileNameChange", fileName);
+      store.commit("createFileURL", URL.createObjectURL(file.value));
+    };
+    const updateBlog = () => {
+      const dataBase = await db.collection('blogPosts').doc(routeID.value);
+      if (blogTitle.value.length !== 0 && blogHTML.value.length !== 0) {
+        if (file.value) {
+          loading.value = true;
+          const storageRef = firebase.storage().ref();
+          const docRef = storageRef.child(
+            `documents/BlogCoverPhotos/${store.state.blogPhotoName}`
+          );
+          docRef.put(file.value).on(
+            "state_changed",
+            (snapshot) => {
+              console.log(snapshot);
+            },
+            (err) => {
+              console.log(err);
+              loading.value = false;
+            },
+            async () => {
+              const downloadURL = await docRef.getDownloadURL();
+
+              await dataBase.update({
+                blogHTML: blogHTML.value,
+                blogCoverPhoto: downloadURL,
+                blogCoverPhotoName: blogCoverPhotoName.value,
+                blogTitle: blogTitle.value,
+              });
+              await store.dispatch("updatePost", routeID.value);
+              loading.value = false;
+              router.push({
+                name: "ViewBlog",
+                params: { blogid: dataBase.id },
+              });
+            }
+          );
+          return;
+        }
+        loading.value = true;
+        await dataBase.update({
+          blogHTML: blogHTML.value,
+          blogTitle: blogTitle.value,
+        });
+        await store.dispatch('updatePost', routeID);
+        loading.value = false;
+        router.push({
+          name: 'ViewBlog',
+          params: { blogid: dataBase.id },
+        });
+        return;
+      }
+      error.value = true;
+      errorMsg.value = "Please ensure Blog Title & Blog Post has been filled!";
+      setTimeout(() => {
+        error.value = false;
+      }, 3000);
+      return;
+    };
+    const imageHandler = (file, Editor, cursorLocation, resetUploader) => {
+      const storageRef = firebase.storage().ref();
+      const docRef = storageRef.child(`documents/blogPostPhotos/${file.name}`);
+      docRef.put(file).on(
+        "state_changed",
+        (snapshot) => {
+          console.log(snapshot);
+        },
+        (err) => {
+          console.log(err);
+        },
+        async () => {
+          const downloadURL = await docRef.getDownloadURL();
+          Editor.insertEmbed(cursorLocation, "image", downloadURL);
+          resetUploader();
+        }
+      );
+    };
+
     onMounted(async () => {
       routeID.value = route.params.blogid;
-      currentBlog.value = await store.state.blogPosts.filter(post => post.postID === routeID.value);
-      store.commit('setBlogState', currentBlog[0]);
+      currentBlog.value = await store.state.blogPosts.filter(post => post.blogID === routeID.value);
+      store.commit('setBlogState', currentBlog.value[0]);
     });
 
     return {
@@ -116,11 +195,19 @@ export default {
       errorMsg,
       loading,
       file,
+      currentBlog,
       editorSettings,
       profileId,
       blogCoverPhotoName,
+      blogPhotoFileURL,
+      blogPhotoPreview,
       blogTitle,
-      blogHTML
+      blogHTML,
+      blogPhoto,
+      openPreview,
+      fileChange,
+      updateBlog,
+      imageHandler,
     };
   },
 };

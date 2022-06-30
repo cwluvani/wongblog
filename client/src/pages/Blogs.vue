@@ -32,7 +32,7 @@ export default {
             get: () => store.state.editPost,
             set: payload => store.commit('toggleEditPost', payload)
         });
-        const blogCards = computed(() => store.getters.blogPostsCards);
+        const blogCards = computed(() => store.state.blogPosts);
 
         onBeforeUnmount(() => {
           store.commit('toggleEditPost', false);
