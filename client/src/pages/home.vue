@@ -2,7 +2,7 @@
   <div class="home">
       <BlogPost v-if="!user" :post="welcomeScreen" />
       <BlogPost
-       v-for="(post, index) in sampleBlogPost"
+       v-for="(post, index) in blogPostsFeed"
        :key="index"
        :post="post"
       />
@@ -12,7 +12,7 @@
               <h3>View More Recent Blogs</h3>
               <div class="blog-cards">
                 <BlogCard
-                    v-for="(cardContent, index) in sampleBlogCard"
+                    v-for="(cardContent, index) in blogPostsCards"
                     :key="index"
                     :cardContent = "cardContent"
                 />
@@ -55,17 +55,13 @@ export default {
             photo: "coding",
         });
         const blogPostsFeed = computed(() => store.getters.blogPostsFeed);
-        const blogPostsCard = computed(() => store.getters.blogPostsCards);
         const user = computed(() => store.state.user);
-        const sampleBlogPost = computed(() => store.state.sampleBlogPost);
-        const sampleBlogCard = computed(() => store.state.sampleBlogCard);
+        const blogPostsCards = computed(() => store.getters.blogPostsCards);
 
         return {
             welcomeScreen,
-            sampleBlogPost,
-            sampleBlogCard,
             blogPostsFeed,
-            blogPostsCard,
+            blogPostsCards,
             user
         }
     },

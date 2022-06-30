@@ -3,21 +3,21 @@
     <div class="blog-content">
       <div>
         <h2 v-if="post.welcomeScreen"> {{ post.title }} </h2>
-        <h2 v-else> {{ post.title }} </h2>
+        <h2 v-else> {{ post.blogTitle }} </h2>
         <p v-if="post.welcomeScreen"> {{ post.blogPost }} </p>
         <p class="content-preview" v-else v-html="post.blogHTML"></p>
 
-        <router-link class="link link-light" v-if="post.welcomeScreen" to="#">
+        <router-link class="link link-light" v-if="post.welcomeScreen" :to="{ name: 'Login' }">
           Login/Register<svg aria-hidden="true" focusable="false" data-prefix="fal" data-icon="arrow-right" class="arrow arrow-light svg-inline--fa fa-arrow-right fa-w-14" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M216.464 36.465l-7.071 7.07c-4.686 4.686-4.686 12.284 0 16.971L387.887 239H12c-6.627 0-12 5.373-12 12v10c0 6.627 5.373 12 12 12h375.887L209.393 451.494c-4.686 4.686-4.686 12.284 0 16.971l7.071 7.07c4.686 4.686 12.284 4.686 16.97 0l211.051-211.05c4.686-4.686 4.686-12.284 0-16.971L233.434 36.465c-4.686-4.687-12.284-4.687-16.97 0z"></path></svg>
         </router-link>
-        <router-link class="link" v-else to="#">
+        <router-link class="link" v-else :to="{ name: '' }">
           View The Post<svg aria-hidden="true" focusable="false" data-prefix="fal" data-icon="arrow-right" class="arrow svg-inline--fa fa-arrow-right fa-w-14" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M216.464 36.465l-7.071 7.07c-4.686 4.686-4.686 12.284 0 16.971L387.887 239H12c-6.627 0-12 5.373-12 12v10c0 6.627 5.373 12 12 12h375.887L209.393 451.494c-4.686 4.686-4.686 12.284 0 16.971l7.071 7.07c4.686 4.686 12.284 4.686 16.97 0l211.051-211.05c4.686-4.686 4.686-12.284 0-16.971L233.434 36.465c-4.686-4.687-12.284-4.687-16.97 0z"></path></svg>
         </router-link>
       </div>
     </div>
     <div class="blog-photo">
       <img v-if="post.welcomeScreen" :src="require(`../assets/blogPhotos/${post.photo}.jpg`)" alt="blog-photo">
-      <img v-else :src="require(`../assets/blogPhotos/${post.blogCoverPhoto}.jpg`)" alt="blogCoverPhoto">
+      <img v-else :src="post.blogCoverPhoto" alt="blogCoverPhoto">
     </div>
   </div>
 </template>
