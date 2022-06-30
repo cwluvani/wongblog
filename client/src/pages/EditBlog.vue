@@ -1,6 +1,6 @@
 <template>
   <div class="create-post">
-    <BlogCoverPreview v-show="false" />
+    <BlogCoverPreview v-show="blogPhotoPreview" />
     <Loading v-show="loading" />
 
     <div class="container">
@@ -19,12 +19,13 @@
             accept=".png, .jpg, .jpeg"
           />
           <button
+            @click="openPreview"
             class="preview"
             :class="{ 'button-inactive': !blogPhotoFileURL }"
           >
             Preview Photo
           </button>
-          <span>File Chose: {{ blogPhotoName }}</span>
+          <span>File Chose: {{ blogCoverPhotoName }}</span>
         </div>
       </div>
       <div class="editor">
@@ -50,9 +51,10 @@ import BlogCoverPreview from "../components/BlogCoverPreview.vue";
 import Loading from "../components/Loading.vue";
 import { computed, reactive, ref, onMounted } from "vue";
 import { useStore } from "vuex";
+import { useRoute, useRouter } from "vue-router";
+
 import Quill from "quill";
 import { VueEditor } from "vue3-editor";
-import { useRoute, useRouter } from "vue-router";
 import db from "../firebase/firebaseInit";
 import firebase from "firebase/app";
 import "firebase/storage";
@@ -79,7 +81,7 @@ export default {
     const errorMsg = ref(null);
     const loading = ref(null);
     const file = ref(null);
-    const blogPhoto = ref(null); // file-type input ref
+    const blogPhoto = ref(null); // input ref
     const editorSettings = reactive({
       modules: {
         ImageResize: {},
@@ -108,7 +110,7 @@ export default {
       store.commit("fileNameChange", fileName);
       store.commit("createFileURL", URL.createObjectURL(file.value));
     };
-    const updateBlog = () => {
+    const updateBlog = async () => {
       const dataBase = await db.collection('blogPosts').doc(routeID.value);
       if (blogTitle.value.length !== 0 && blogHTML.value.length !== 0) {
         if (file.value) {
@@ -213,7 +215,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .create-post {
   position: relative;
   height: 100%;

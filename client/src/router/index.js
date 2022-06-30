@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
 import Home from '../pages/Home.vue';
-// import firebase from 'firebase/app';
+import firebase from 'firebase/app';
 import 'firebase/auth';
 
 const Blogs = () => import('../pages/Blogs.vue');
@@ -22,7 +22,8 @@ const routes = [
         name: 'Home',
         component: Home,
         meta: {
-            title: 'Home'
+            title: 'Home',
+            requiresAuth: false,
         },
     },
     {
@@ -30,7 +31,8 @@ const routes = [
         name: 'Blogs',
         component: Blogs,
         meta: {
-            title: 'Blogs'
+            title: 'Blogs',
+            requiresAuth: false,
         }
     },
     {
@@ -40,26 +42,35 @@ const routes = [
         meta: {
             title: 'Create Post',
             requiresAuth: true,
-            requiresAdmin: true
+            requiresAdmin: false,
         }
 
     },
     {
         path: '/login',
         name: 'Login',
-        component: Login
+        component: Login,
+        meta: {
+            title: 'Login',
+            requiresAuth: false,
+        }
     },
     {
         path: '/register',
         name: 'Register',
-        component: Register
+        component: Register,
+        meta: {
+            title: 'Register',
+            requiresAuth: false,
+        }
     },
     {
         path: '/forgot-password',
         name: 'ForgotPassword',
         component: ForgotPassword,
         meta: {
-            title: 'Forgot Password'
+            title: 'Forgot Password',
+            requiresAuth: false,
         }
     },
     {
@@ -67,7 +78,8 @@ const routes = [
         name: 'Profile',
         component: Profile,
         meta: {
-            title: 'Profile'
+            title: 'Profile',
+            requiresAuth: true,
         }
     },
     {
@@ -75,7 +87,9 @@ const routes = [
         name: 'Admin',
         component: Admin,
         meta: {
-            title: 'Admin'
+            title: 'Admin',
+            requiresAuth: true,
+            requiresAdmin: false,
         }
     },
     {
@@ -85,7 +99,7 @@ const routes = [
         meta: {
             title: 'Preview Blog Post',
             requriesAuth: true,
-            requiresAdmin: true
+            requiresAdmin: false,
         }
     },
     {
@@ -94,7 +108,7 @@ const routes = [
         component: ViewBlog,
         meta: {
             title: "View Blog Post",
-            requiresAuth: false
+            requiresAuth: false,
         }
     },
     {
@@ -102,9 +116,9 @@ const routes = [
         name: 'EditBlog',
         component: EditBlog,
         meta: {
-            title: 'Edit BLog Post',
+            title: 'Edit Blog Post',
             requiresAuth: true,
-            requiresAdmin: true
+            requiresAdmin: false,
         }
     }
 ];
@@ -120,9 +134,33 @@ router.beforeEach((to, from, next) => {
     next();
 });
 
-// remember to check meta info
-// router.beforeEach((to, from, next) => {
-
-// });
+router.beforeEach(async (to, from, next) => {
+    let user = firebase.auth().currentUser;
+    let admin = null;
+    if (user) {
+        let token = await user.getIdTokenResult()
+                        .catch((err) => { 
+                            console.log('get token error: ', err); 
+                        });
+        if (typeof (await token) === 'undefined') {
+            return next();
+        } else {
+            admin = token.claims.admin;
+        }
+    }
+    if (to.matched.some(res => res.meta.requiresAuth)) {
+        if (user) {
+            if (to.matched.some(res => res.meta.requiresAdmin)) {
+                if (admin) {
+                    return next();
+                }
+                return next({ name: 'Home' });
+            }
+            return next();
+        }
+        return next({ name: 'Home' });
+    }
+    return next();
+});
 
 export default router;
